@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Profile</title>
+</head>
+<body>
+    <div class="container">
+        <h1>User Profile</h1>
+        <img src="/images/logo.png" alt="User Avatar" width="100">
+        <p><strong>Email:</strong> <span id="user-email"></span></p>
+        <p><strong>Name:</strong> <span id="user-name"></span></p>
+        <p><strong>Phone:</strong> <span id="user-phone"></span></p>
+        <p><strong>Address:</strong> <span id="user-address"></span></p>
+        <p><strong>Role:</strong> <span id="user-role"></span></p>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const token = localStorage.getItem("jwt");
+            if (!token) {
+                alert("You are not logged in!");
+                window.location.href = "/auth/login";
+                return;
+            }
+
+            try {
+                const response = await fetch("/user/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById("user-email").textContent = data.email;
+                    document.getElementById("user-name").textContent = data.name;
+                    document.getElementById("user-phone").textContent = data.phone;
+                    document.getElementById("user-address").textContent = data.address;
+                    document.getElementById("user-role").textContent = data.role;
+                } else {
+                    alert("Failed to fetch profile. Please log in again.");
+                    window.location.href = "/auth/login";
+                }
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            }
+        });
+    </script>
+</body>
+</html>
